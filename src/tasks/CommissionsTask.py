@@ -342,14 +342,14 @@ class CommissionsTask(BaseDNATask):
         self.wait_until(
             condition=lambda: not self.find_esc_menu(),
             post_action=self.click(0.73, 0.92, after_sleep=0.5),
-            time_out=2,
+            time_out=4,
         )
         setting_box = self.box_of_screen_scaled(2560, 1440, 738, 4, 1123, 79, name="other_section", hcenter=True)
         setting_other = self.wait_until(lambda: self.find_one("setting_other", box=setting_box), time_out=10, raise_if_not_found=True)
         self.wait_until(
-            condition=lambda: self.calculate_color_percentage(setting_menu_selected_color, setting_other) > 0.12,
+            condition=lambda: self.calculate_color_percentage(setting_menu_selected_color, setting_other) > 0.24,
             post_action=self.click_box(setting_other, after_sleep=0.5),
-            time_out=2,
+            time_out=4,
         )
         confirm_box = self.box_of_screen_scaled(2560, 1440, 1298, 776, 1368, 843, name="confirm_btn", hcenter=True)
         self.wait_until(
@@ -360,12 +360,12 @@ class CommissionsTask(BaseDNATask):
                 self.move_back_from_safe_position(),
                 self.sleep(1),
             ),
-            time_out=4,
+            time_out=6,
         )
         if not self.wait_until(
             condition=self.in_team,
             post_action=self.click(0.59, 0.56, after_sleep=0.5),
-            time_out=2,
+            time_out=4,
         ):
             self.wait_until(self.in_team, post_action=self.send_key("esc", after_sleep=1), time_out=10)
             return False
@@ -395,7 +395,7 @@ class QuickMoveTask:
 setting_menu_selected_color = {
     'r': (220, 255),  # Red range
     'g': (200, 255),  # Green range
-    'b': (125, 255)  # Blue range
+    'b': (125, 250)  # Blue range
 }
 
 retry_btn_color = {
