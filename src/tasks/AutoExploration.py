@@ -1,6 +1,5 @@
 from qfluentwidgets import FluentIcon
 import time
-import cv2
 
 from ok import Logger, TaskDisabledException
 from src.tasks.CommissionsTask import CommissionsTask, QuickMoveTask, Mission
@@ -35,7 +34,17 @@ class AutoExploration(DNAOneTimeTask, CommissionsTask, BaseCombatTask):
         self.action_timeout = 10
         self.quick_move_task = QuickMoveTask(self)
         self.external_movement = _default_movement
+        self.external_config = None
 
+    @property
+    def config(self):
+        if self.external_movement == _default_movement:
+            return super().config
+        else:
+            if self.external_config is None:
+                self.external_config = super().config.copy()
+            return self.external_config
+        
     def config_external_movement(self, func: callable, config: dict):
         if callable(func):
             self.external_movement = func
@@ -47,6 +56,7 @@ class AutoExploration(DNAOneTimeTask, CommissionsTask, BaseCombatTask):
         DNAOneTimeTask.run(self)
         self.move_mouse_to_safe_position()
         self.set_check_monthly_card()
+        self.external_movement = _default_movement
         try:
             return self.do_run()
         except TaskDisabledException as e:
