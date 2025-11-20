@@ -74,4 +74,18 @@ jobs:
               });
             }
 
-            await processIssue(context.payload.issue);
+            if (context.eventName === 'issues') {
+              await processIssue(context.payload.issue);
+            } else {
+              for await (const { data: issues } of github.paginate.iterator(github.rest.issues.listForRepo, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'open',
+              })) {
+                for (const issue of issues) {
+                  if (!issue.pull_request) {
+                    await processIssue(issue);
+                  }
+                }
+              }
+            }
