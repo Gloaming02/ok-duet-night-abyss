@@ -61,7 +61,7 @@ body:
       label: 截图、日志和录屏 / Screenshots, Logs & Recordings
       description: |
         **上传方式 / How to upload:**
-        1. 游戏画面的截图一律使用ok-dna自带的截图功能
+        1. 游戏画面的截图一律使用ok-dna自带的截图功能。
         2. 将图片、视频或 `.log` 文件直接 **拖拽** 到下方文本框中。
         3. 也可以使用剪贴板粘贴图片 (Ctrl+V)。
 
