@@ -145,27 +145,28 @@ class CommissionsTask(BaseDNATask):
         self.wait_until(lambda: not self.in_team(), time_out=action_timeout, raise_if_not_found=True)
 
     def give_up_mission(self, timeout=0):
+        def is_mission_start_iface():
+            return self.find_retry_btn() or self.find_bottom_start_btn() or self.find_big_bottom_start_btn()
+
         action_timeout = self.action_timeout if timeout == 0 else timeout
         box = self.box_of_screen_scaled(2560, 1440, 1301, 776, 1365, 841, name="give_up_mission", hcenter=True)
-        self.open_in_mission_menu()
 
-        self.wait_until(
-            condition=lambda: self.find_start_btn(box=box),
-            post_action=lambda: self.click_relative(0.95, 0.91, after_sleep=0.25),
-            time_out=action_timeout,
-            raise_if_not_found=True,
-        )
-        self.sleep(0.5)
-        self.wait_until(
-            condition=lambda: not self.find_start_btn(box=box),
-            post_action=lambda: self.click_box(self.find_start_btn(box=box), after_sleep=0.25),
-            time_out=action_timeout,
-            raise_if_not_found=True,
-        )
-        self.wait_until(
-            condition=lambda: self.find_retry_btn() or self.find_bottom_start_btn() or self.find_big_bottom_start_btn(),
-            time_out=action_timeout,
-        )
+        if self.open_in_mission_menu(time_out=10, raise_if_not_found=False):
+            self.wait_until(
+                condition=lambda: self.find_start_btn(box=box),
+                post_action=lambda: self.click_relative(0.95, 0.91, after_sleep=0.25),
+                time_out=action_timeout,
+                raise_if_not_found=True,
+            )
+            self.sleep(0.5)
+            self.wait_until(
+                condition=lambda: not self.find_start_btn(box=box),
+                post_action=lambda: self.click_box(self.find_start_btn(box=box), after_sleep=0.25),
+                time_out=action_timeout,
+                raise_if_not_found=True,
+            )
+
+        self.wait_until(condition=is_mission_start_iface, time_out=60, raise_if_not_found=True)
 
     def continue_mission(self, timeout=0):
         if self.in_team():
@@ -182,12 +183,15 @@ class CommissionsTask(BaseDNATask):
         return True
 
     def choose_drop_rate(self, timeout=0):
+        def click_drop_rate_btn():
+            if (box:=self.find_drop_rate_btn()):
+                self.click_box(box, after_sleep=0.25)
         action_timeout = self.action_timeout if timeout == 0 else timeout
         self.sleep(0.5)
         self.choose_drop_rate_item()
         self.wait_until(
             condition=lambda: not self.find_drop_item() and not self.find_drop_item(800),
-            post_action=lambda: self.click_box(self.find_drop_rate_btn(), after_sleep=0.25),
+            post_action=click_drop_rate_btn,
             time_out=action_timeout,
             raise_if_not_found=True,
         )
@@ -427,27 +431,34 @@ class CommissionsTask(BaseDNATask):
         self.check_for_monthly_card()
 
         if self.find_letter_reward_btn():
+            self.log_info("处理任务界面: 选择密函奖励")
             self.choose_letter_reward()
             return
 
         if self.find_letter_interface():
+            self.log_info("处理任务界面: 选择密函")
             self.choose_letter()
             return self.get_return_status()
         elif self.find_drop_item() or self.find_drop_item(800):
+            self.log_info("处理任务界面: 选择委托手册")
             self.choose_drop_rate()
             return self.get_return_status()
 
         if self.find_retry_btn() or self.find_bottom_start_btn() or self.find_big_bottom_start_btn():
+            self.log_info("处理任务界面: 开始任务")
             self.start_mission()
             self.mission_status = Mission.START
             return
         elif self.find_continue_btn():
             if stop_func():
+                self.log_info("处理任务界面: 终止任务")
                 return Mission.STOP
+            self.log_info("处理任务界面: 继续任务")
             self.continue_mission()
             self.mission_status = Mission.CONTINUE
             return
         elif self.find_esc_menu():
+            self.log_info("处理任务界面: 放弃任务")
             self.give_up_mission()
             return Mission.GIVE_UP
         return False

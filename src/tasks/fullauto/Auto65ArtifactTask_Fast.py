@@ -7,6 +7,8 @@ from src.tasks.DNAOneTimeTask import DNAOneTimeTask
 from src.tasks.CommissionsTask import CommissionsTask, Mission
 from src.tasks.BaseCombatTask import BaseCombatTask
 
+from src.tasks.AutoDefence import AutoDefence
+
 logger = Logger.get_logger(__name__)
 
 
@@ -45,7 +47,9 @@ class Auto65ArtifactTask_Fast(DNAOneTimeTask, CommissionsTask, BaseCombatTask):
         self.move_mouse_to_safe_position(save_current_pos=False)
         self.set_check_monthly_card()
         try:
-            return self.do_run()
+            _to_do_task = self.get_task_by_class(AutoDefence)
+            _to_do_task.config_external_movement(self.walk_to_aim, self.config)
+            return _to_do_task.do_run()
         except TaskDisabledException:
             pass
         except Exception as e:
