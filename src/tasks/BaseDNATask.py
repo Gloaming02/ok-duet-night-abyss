@@ -535,7 +535,7 @@ class BaseDNATask(BaseTask):
                 #     time.sleep(1)
                 #     continue
 
-                key = random.choice(["z", "1", "2", "3"])
+                key = random.choice([self.key_config['Geniemon Key'], "1", "2", "3"])
                 down_time = random.uniform(0.02, 0.12)
                 after_sleep = random.uniform(0.08, 0.15)
                 interaction = self.executor.interaction
