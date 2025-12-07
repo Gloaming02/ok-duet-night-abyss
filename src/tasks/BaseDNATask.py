@@ -333,7 +333,7 @@ class BaseDNATask(BaseTask):
             self.sleep(random.uniform(0.08, post_sleep))
             if use_safe_move:
                 self.move_mouse_to_safe_position(box=safe_move_box)
-                down_time = 0.02
+                down_time = 0.01 if down_time == 0.0 else down_time
             self.click(x, y, down_time=down_time, interval=interval)
             if use_safe_move:
                 self.move_back_from_safe_position()
@@ -360,7 +360,7 @@ class BaseDNATask(BaseTask):
             down_time, post_sleep, after_sleep
         )
 
-    def click_relative_random(self, x1, y1, x2, y2, down_time=0.02, post_sleep=0.0, after_sleep=0.0, use_safe_move=False, safe_move_box=None):
+    def click_relative_random(self, x1, y1, x2, y2, down_time=0.0, post_sleep=0.0, after_sleep=0.0, use_safe_move=False, safe_move_box=None):
         r_x = random.uniform(x1, x2)
         r_y = random.uniform(y1, y2)
 
