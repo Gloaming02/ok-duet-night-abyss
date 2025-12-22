@@ -705,8 +705,12 @@ class BaseDNATask(BaseTask):
         def _fidget_worker():
             current_drift = [0, 0]
 
-            spiral_key = self.get_spiral_dive_key()
-            numeric_keys = [str(i) for i in range(1, 6) if str(i) != spiral_key][:4]
+            excluded_keys = {
+                self.get_spiral_dive_key(), 
+                self.key_config.get('Ultimate Key'), 
+                self.key_config.get('Combat Key')
+            }
+            numeric_keys = [str(i) for i in range(1, 7) if str(i) not in excluded_keys][:4]
             random_key_list = [self.key_config['Geniemon Key']] + numeric_keys
 
             if self.executor.current_task:
