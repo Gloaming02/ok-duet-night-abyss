@@ -28,11 +28,13 @@ class AutoExpulsion(DNAOneTimeTask, CommissionsTask, BaseCombatTask):
         self.default_config.update({
             "随机游走": False,
             "挂机模式": "开局重置角色位置",
-            "开局向前走": 0.0
+            "开局向前走": 0.0,
+            "开局向前走时按冲刺": False
         })
         self.config_description.update({
             "随机游走": "是否在任务中随机移动",
-            "开局向前走": "开局向前走几秒"
+            "开局向前走": "开局向前走几秒",
+            "开局向前走时按冲刺": "可以适配且加速80决断（时间设置7秒）"
         })
         self.config_type["挂机模式"] = {
             "type": "drop_down",
@@ -117,7 +119,18 @@ class AutoExpulsion(DNAOneTimeTask, CommissionsTask, BaseCombatTask):
             self.send_key("w", down_time=0.5)
         elif self.config.get("挂机模式") == "开局向前走":
             if (walk_sec := self.config.get("开局向前走", 0)) > 0:
-                self.send_key("w", down_time=walk_sec)
+                if self.config.get("开局向前走时按冲刺", False):
+                    # 先按方向键，再按闪避键，实现边走路边冲刺
+                    self.send_key_down("w")
+                    self.sleep_check_combat(0.1, check_combat=False)
+                    self.send_key_down(self.get_dodge_key())
+                    # 持续指定时间
+                    self.sleep_check_combat(walk_sec, check_combat=False)
+                    # 释放按键
+                    self.send_key_up(self.get_dodge_key())
+                    self.send_key_up("w")
+                else:
+                    self.send_key("w", down_time=walk_sec)
 
     def create_random_walk_ticker(self):
         """创建一个随机游走的计时器函数。"""
