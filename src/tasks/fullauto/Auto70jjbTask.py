@@ -311,12 +311,12 @@ class Auto70jjbTask(DNAOneTimeTask, CommissionsTask, BaseCombatTask):
         # 等待0.5秒后按下w
         self.sleep(0.5)
         self.send_key_down("w")
-        # 再等待1.0秒（总共1.5秒）后按下lshift
+        # 再等待1.0秒（总共1.5秒）后按下闪避键
         self.sleep(1.0)
-        self.send_key_down("lshift")
-        # 再等待5.5秒（总共7.0秒）后松开lshift
+        self.send_key_down(self.get_dodge_key())
+        # 再等待5.5秒（总共7.0秒）后松开闪避键
         self.sleep(5.5)
-        self.send_key_up("lshift")
+        self.send_key_up(self.get_dodge_key())
         # 再等待1.0秒（总共8.0秒）后松开w
         self.sleep(1.0)
         self.send_key_up("w")
